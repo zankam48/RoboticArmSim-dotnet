@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "k5RM0bR/BXQ=",
+  "dgSpecHash": "BhAVeglAWSM=",
   "success": true,
   "projectFilePath": "C:\\Users\\Batch 12\\Documents\\Zankam\\RoboticArmSim-dotnet\\backend\\backend.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Batch 12\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.4\\microsoft.aspnetcore.openapi.8.0.4.nupkg.sha512",
+    "C:\\Users\\Batch 12\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.3\\microsoft.aspnetcore.openapi.8.0.3.nupkg.sha512",
     "C:\\Users\\Batch 12\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512"
   ],
   "logs": []

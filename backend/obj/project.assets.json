@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net8.0": {
-      "Microsoft.AspNetCore.OpenApi/8.0.4": {
+      "Microsoft.AspNetCore.OpenApi/8.0.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.OpenApi": "1.4.3"
@@ -37,10 +37,10 @@
     }
   },
   "libraries": {
-    "Microsoft.AspNetCore.OpenApi/8.0.4": {
-      "sha512": "TFiXbP0tqRgJKcpiCSSp79q6QaiF8gqRhZgrU48FQajhVkiwHSp1O1b1hkYC4Ehl4clbk3pHwdfwN9mRtDAFbQ==",
+    "Microsoft.AspNetCore.OpenApi/8.0.3": {
+      "sha512": "mUq0UL+H7UtA3Jud/7/BC7n5W2c4zCvTFUa2hE2+/oQqATa4oGHb87ETON09SEWkcbBRTz3WM16kTE+zuoXq2A==",
       "type": "package",
-      "path": "microsoft.aspnetcore.openapi/8.0.4",
+      "path": "microsoft.aspnetcore.openapi/8.0.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -48,7 +48,7 @@
         "THIRD-PARTY-NOTICES.TXT",
         "lib/net8.0/Microsoft.AspNetCore.OpenApi.dll",
         "lib/net8.0/Microsoft.AspNetCore.OpenApi.xml",
-        "microsoft.aspnetcore.openapi.8.0.4.nupkg.sha512",
+        "microsoft.aspnetcore.openapi.8.0.3.nupkg.sha512",
         "microsoft.aspnetcore.openapi.nuspec"
       ]
     },
@@ -69,7 +69,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Microsoft.AspNetCore.OpenApi >= 8.0.4"
+      "Microsoft.AspNetCore.OpenApi >= 8.0.3"
     ]
   },
   "packageFolders": {
@@ -116,7 +116,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": {
             "target": "Package",
-            "version": "[8.0.4, )"
+            "version": "[8.0.3, )"
           }
         },
         "imports": [

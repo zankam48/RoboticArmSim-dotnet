@@ -1,13 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace RoboticArmSim.Controllers;
-public class RoboticArmController : Controller
+
+[ApiController] 
+[Route("api/[controller]")]
+public class RoboticArmController : ControllerBase
 {
-    private readonly ILogger<RoboticArmController> _logger;
+    // robot arm service
+    // ihubcontext 
+    // ilogger
 
     public RoboticArmController(ILogger<RoboticArmController> logger)
     {
-        _logger = logger;
+        // yg 3-3nya masukin sini
     }
 
     [HttpGet]
@@ -25,28 +31,28 @@ public class RoboticArmController : Controller
     [HttpGet("api/robotarm/state")]
     public IActionResult State()
     {
-
+        return Ok();
     }
     
 
-    [HttpPost("api/robotarm/move")]
-    public IActionResult MoveArm(int armId, int position)
+    [HttpPost("move")]
+    public async Task<IActionResult> MoveArm(int armId, int position)
     {
         if (position < 0) return BadRequest("Position must be positive!");
         return Ok($"Arm {armId} moved to position {position}");
     }
 
-    [HttpUpdate("api/robotarm/update")]
+    [HttpPatch("api/robotarm/update")]
     public IActionResult Update()
     {
-
+        return Ok();
     }
 
 
     [HttpDelete("api/robotarm/reset")]
     public IActionResult Reset()
     {
-
+        return Ok();
     }
     
 }
