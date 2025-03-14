@@ -1,0 +1,8 @@
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.csproj.AssemblyReference.cache
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.AssemblyInfoInputs.cache
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.AssemblyInfo.cs
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.csproj.CoreCompileInputs.cache
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\obj\Debug\net8.0\backend.sourcelink.json

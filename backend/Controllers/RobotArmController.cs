@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace RoboticArmSim.Controllers;
-public class RoboticArmSimController : Controller
+public class RoboticArmController : Controller
 {
-    private readonly ILogger<RoboticArmSimController> _logger;
+    private readonly ILogger<RoboticArmController> _logger;
 
-    public RoboticArmSimController(ILogger<RoboticArmSimController> logger)
+    public RoboticArmController(ILogger<RoboticArmController> logger)
     {
         _logger = logger;
     }
@@ -22,11 +22,31 @@ public class RoboticArmSimController : Controller
     //     return "";
     // }
 
-    [HttpGet("api/move")]
+    [HttpGet("api/robotarm/state")]
+    public IActionResult State()
+    {
+
+    }
+    
+
+    [HttpPost("api/robotarm/move")]
     public IActionResult MoveArm(int armId, int position)
     {
         if (position < 0) return BadRequest("Position must be positive!");
         return Ok($"Arm {armId} moved to position {position}");
+    }
+
+    [HttpUpdate("api/robotarm/update")]
+    public IActionResult Update()
+    {
+
+    }
+
+
+    [HttpDelete("api/robotarm/reset")]
+    public IActionResult Reset()
+    {
+
     }
     
 }
