@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using 
 
 
 namespace RoboticArmSim.Controllers;
@@ -16,17 +18,11 @@ public class RoboticArmController : ControllerBase
         // yg 3-3nya masukin sini
     }
 
-    [HttpGet]
-    public ActionResult<string> Get()
+    [HttpGet("api/move")]
+    public async Task<IActionResult> MoveArm([FromBody] MovementCommand command)
     {
-        return "Welcome to Robotic Arm Simulation API!";
+        return "";
     }
-
-    // [HttpGet("api/move")]
-    // public ActionResult<string> MoveArm(int armId, int position)
-    // {
-    //     return "";
-    // }
 
     [HttpGet("api/robotarm/state")]
     public IActionResult State()
@@ -55,4 +51,10 @@ public class RoboticArmController : ControllerBase
         return Ok();
     }
     
+    [HttpGet("stats")]
+    public IActionResult GetArmStatus()
+    {
+        var status = 
+        return Ok(status)
+    }
 }
