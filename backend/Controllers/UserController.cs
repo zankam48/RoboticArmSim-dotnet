@@ -5,15 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using RoboticArmSim.Models;
 using System.Threading.Tasks;
 
+[ApiController]
+[Route("api/[controller]")]
 public class UserController : Controller
 {
-    [ApiController]
-    [Route("api/[controller]")]
+    
     private readonly UserService _userService;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(ILogger<UserController> userService)
+    public UserController(UserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
+        _logger = logger;
     } 
 
     [HttpPost("register")]
@@ -24,7 +27,7 @@ public class UserController : Controller
         {
             return BadRequest("User registration failed.");
         }
-        return Ok("User registered succesfully.")
+        return Ok("User registered succesfully.");
     }
 
     [HttpPost("login")]
@@ -39,9 +42,9 @@ public class UserController : Controller
     }
 
     [HttpPost("assign-control")]
-    public async Task<IActionResult> AssignControl([FromBody] ControlRequest request)
+    public async Task<IActionResult> AssignControl([FromBody] User user)
     {
-        var result = await _userService.AssignControlAsync(request.UserId);
+        var result = await _userService.AssignControlAsync(user.Id);
         if (!result)
         {
             return BadRequest("Control assignment failed.");

@@ -13,49 +13,54 @@ public class RoboticArmController : ControllerBase
 {
     // robot arm service
     // ihubcontext 
-    // ilogger
+    private readonly ILogger<RoboticArmController> _logger;
 
     public RoboticArmController(ILogger<RoboticArmController> logger)
     {
-        // yg 3-3nya masukin sini
+        _logger = logger;
     }
 
-    [HttpGet("api/move")]
+    [HttpGet("move")]
     public async Task<IActionResult> MoveArm([FromBody] MovementCommand command)
     {
-        return Ok();
+        if (command.Angle < 0)
+            return BadRequest("Angle must be positive!");
+
+        var result = await _robotArmService.MoveArmAsync(command);
+        if (result == null)
+            return BadRequest("Invalid movement command.");
+
+        // Broadcast update to all connected clients
+        await _robotArmHub.Clients.All.SendAsync("ReceiveArmUpdate", result);
+
+        return Ok(result);
     }
 
-    [HttpGet("api/robotarm/state")]
+
+    [HttpGet("state")]
     public IActionResult State()
     {
         return Ok();
     }
-    
-
-    [HttpPost("move")]
-    public async Task<IActionResult> MoveArm(int armId, int position)
-    {
-        if (position < 0) return BadRequest("Position must be positive!");
-        return Ok($"Arm {armId} moved to position {position}");
-    }
-
-    [HttpPatch("api/robotarm/update")]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-
-    [HttpDelete("api/robotarm/reset")]
-    public IActionResult Reset()
-    {
-        return Ok();
-    }
-    
     [HttpGet("stats")]
     public IActionResult GetArmStatus()
     {
         return Ok();
     }
 }
+
+
+    [HttpPatch("update")]
+    public IActionResult Update()
+    {
+        return Ok();
+    }
+
+
+    [HttpDelete("reset")]
+    public IActionResult Reset()
+    {
+        return Ok();
+    }
+    
+    
