@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using 
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using RoboticArmSim.Models;
 
 
 namespace RoboticArmSim.Controllers;
@@ -21,7 +23,7 @@ public class RoboticArmController : ControllerBase
     [HttpGet("api/move")]
     public async Task<IActionResult> MoveArm([FromBody] MovementCommand command)
     {
-        return "";
+        return Ok();
     }
 
     [HttpGet("api/robotarm/state")]
@@ -54,7 +56,6 @@ public class RoboticArmController : ControllerBase
     [HttpGet("stats")]
     public IActionResult GetArmStatus()
     {
-        var status = 
-        return Ok(status)
+        return Ok();
     }
 }
