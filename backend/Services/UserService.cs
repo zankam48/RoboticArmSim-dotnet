@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Identity.Data;
 using RoboticArmSim.Models;
 
@@ -7,11 +9,11 @@ namespace RoboticArmSim.Services;
 
 public class UserService 
 {
-    // db context readonly
+    private readonly ApplicationDbContext _context;
     private readonly string _jwtSecretKey;
-    public UserService(IConfiguration configuration)
+    public UserService(ApplicationDbContext context, IConfiguration configuration)
     {
-        // db context
+        _context = context;
         _jwtSecretKey = configuration["Jwt:SecretKey"];
     }
 
@@ -38,5 +40,57 @@ public class UserService
         return GenerateJwtToken(user);
     }
 
+    public async Task<bool> AssignControlAsync(int userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return false;
+
+        var users = await _context.Users.ToListAsync();
+        users.ForEach(u => u.HasControl = false);
+
+        user.HasControl = true;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public List<User> GetActiveUsers()
+    {
+        return _context.Users.Where(u => u.HasControl).ToList();
+    }
+
+    private string HashPassword(string password)
+    {
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
+    }
+
+    private bool VerifyPassword(string password, string storedHash)
+    {
+        return HashPassword(password) == storedHash;
+    }
+
+    private string GenerateJwtToken(User user)
+    {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecretKey));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: "RoboticArmSim",
+            audience: "RoboticArmUsers",
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
     
 }
