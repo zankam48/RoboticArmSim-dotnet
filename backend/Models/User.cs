@@ -11,3 +11,5 @@ public class User
     public DateTime LastCommandTime {get; set;}
     public bool IsControlling {get; set;}
 }
+
+

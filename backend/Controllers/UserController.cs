@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using RoboticArmSim.Models;
 using System.Threading.Tasks;
+using RoboticArmSim.Services;
 
 [ApiController]
 [Route("api/[controller]")]

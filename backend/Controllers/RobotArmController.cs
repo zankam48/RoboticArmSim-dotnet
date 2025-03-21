@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using RoboticArmSim.Models;
+using RoboticArmSim.Services;
 
 
 namespace RoboticArmSim.Controllers;
@@ -12,7 +13,9 @@ namespace RoboticArmSim.Controllers;
 public class RoboticArmController : ControllerBase
 {
     // robot arm service
+    private readonly RobotArmService _robotArmService;
     // ihubcontext 
+    private readonly IHubContext<RoboticArmHub> _robotArmHub;
     private readonly ILogger<RoboticArmController> _logger;
 
     public RoboticArmController(ILogger<RoboticArmController> logger)
@@ -47,8 +50,6 @@ public class RoboticArmController : ControllerBase
     {
         return Ok();
     }
-}
-
 
     [HttpPatch("update")]
     public IActionResult Update()
@@ -62,5 +63,9 @@ public class RoboticArmController : ControllerBase
     {
         return Ok();
     }
+}
+
+
+    
     
     
