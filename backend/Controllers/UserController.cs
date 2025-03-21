@@ -32,7 +32,7 @@ public class UserController : Controller
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] RoboticArmSim.DTOs.LoginRequest request)
     {
         var token = await _userService.AuthenticateAsync(request);
         if (string.IsNullOrEmpty(token))

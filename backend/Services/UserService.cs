@@ -9,6 +9,8 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using RoboticArmSim.Data;
+using RoboticArmSim.DTOs;
 
 
 namespace RoboticArmSim.Services;
@@ -23,6 +25,17 @@ public class UserService
         _jwtSecretKey = configuration["Jwt:SecretKey"];
     }
 
+    private bool VerifyPassword(string hash, string password)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, hash);
+    }
+
+    private string HashPassword(string password)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
+
+
     public async Task<bool> RegisterUserAsync(User user)
     {
         if (await _context.Users.AnyAsync(u => u.Username == user.Username))
@@ -36,7 +49,7 @@ public class UserService
         return true;
     }
 
-    public async Task<string> AuthenticateAsync(LoginRequest request)
+    public async Task<string> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequest request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
         if (user == null ||!VerifyPassword(user.PasswordHash, request.Password))
@@ -52,30 +65,19 @@ public class UserService
         if (user == null) return false;
 
         var users = await _context.Users.ToListAsync();
-        users.ForEach(u => u.HasControl = false);
+        users.ForEach(u => u.IsControlling = false);
 
-        user.HasControl = true;
+        user.IsControlling = true;
         await _context.SaveChangesAsync();
         return true;
     }
 
     public List<User> GetActiveUsers()
     {
-        return _context.Users.Where(u => u.HasControl).ToList();
+        return _context.Users.Where(u => u.IsControlling).ToList();
     }
 
-    private string HashPassword(string password)
-    {
-        using var sha256 = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(password);
-        var hash = sha256.ComputeHash(bytes);
-        return Convert.ToBase64String(hash);
-    }
 
-    private bool VerifyPassword(string password, string storedHash)
-    {
-        return HashPassword(password) == storedHash;
-    }
 
     private string GenerateJwtToken(User user)
     {
