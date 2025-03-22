@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using RoboticArmSim.Models;
 using System.Threading.Tasks;
 using RoboticArmSim.Services;
+using RoboticArmSim.DTOs;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -21,7 +22,7 @@ public class UserController : Controller
     } 
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] User user)
+    public async Task<IActionResult> Register([FromBody] User user, LoginRequestDTO request)
     {
         var result = await _userService.RegisterUserAsync(user);
         if (!result)
@@ -32,7 +33,7 @@ public class UserController : Controller
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] RoboticArmSim.DTOs.LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
         var token = await _userService.AuthenticateAsync(request);
         if (string.IsNullOrEmpty(token))

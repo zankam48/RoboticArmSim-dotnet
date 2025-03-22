@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using RoboticArmSim.Models;
 using RoboticArmSim.DTOs;
+using RoboticArmSim.Data;
 
 namespace RoboticArmSim.Services;
 
@@ -12,11 +13,13 @@ public class RobotArmService
 {
     private readonly ILogger<RobotArmService> _logger;
     private readonly RobotArm _robotArm;
+    private readonly ApplicationDbContext _context;
     private readonly IHubContext<RoboticArmHub> _hubContext;
 
-    public RobotArmService(ILogger<RobotArmService> logger, IHubContext<RoboticArmHub> hubContext)
+    public RobotArmService(ILogger<RobotArmService> logger, IHubContext<RoboticArmHub> hubContext, ApplicationDbContext context)
     {
         _logger = logger;
+        _context = context;
         _hubContext = hubContext;
     }
 

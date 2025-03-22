@@ -6,4 +6,9 @@ public class RoboticArmHub : Hub
     {
         await Clients.All.SendAsync("ReceiveMessage", user, message);
     }
+
+    public async Task SendArmUpdate(string update)
+    {
+        await Clients.All.SendAsync("ReceiveArmUpdate", update);
+    }
 }

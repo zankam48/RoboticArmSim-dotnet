@@ -33,7 +33,6 @@ public class RoboticArmController : ControllerBase
         if (result == null)
             return BadRequest("Invalid movement command.");
 
-        // Broadcast update to all connected clients
         await _robotArmHub.Clients.All.SendAsync("ReceiveArmUpdate", result);
 
         return Ok(result);
