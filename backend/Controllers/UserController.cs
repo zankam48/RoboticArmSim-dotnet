@@ -6,6 +6,7 @@ using RoboticArmSim.Models;
 using System.Threading.Tasks;
 using RoboticArmSim.Services;
 using RoboticArmSim.DTOs;
+using System.Net;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -22,16 +23,32 @@ public class UserController : Controller
     } 
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] User user, LoginRequestDTO request)
+    public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO model)
     {
-        var result = await _userService.RegisterUserAsync(user);
-        if (!result)
-        {
-            return BadRequest("User registration failed.");
-        }
-        return Ok("User registered succesfully.");
-    }
+        var response = await ApiResponse<UserDTO>();
 
+        if (!await _userService.IsUniqueUserAsync(model.Username))
+        {
+            response.StatusCode = HttpStatusCode.BadRequest;
+            response.IsSuccess = false;
+            response.ErrorMessages.Add("Username already exists");
+            return BadRequest(response);
+        }
+
+        var user = await _userService.RegisterUserAsync(model);
+        if (user == null)
+        {
+            response.StatusCode = HttpStatusCode.InternalServerError;
+            response.IsSuccess = false;
+            response.ErrorMessages.Add("Failed to register user");
+            return StatusCode(500, response);
+        }
+
+        response.StatusCode = HttpStatusCode.OK;
+        response.IsSuccess = true;
+        response.Data = user;
+        return Ok(response);
+    }
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {

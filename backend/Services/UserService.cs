@@ -36,17 +36,36 @@ public class UserService
     }
 
 
-    public async Task<bool> RegisterUserAsync(User user)
-    {
-        if (await _context.Users.AnyAsync(u => u.Username == user.Username))
-        {
-            return false;
-        }
+    // public async Task<bool> RegisterUserAsync(User user)
+    // {
+    //     if (await _context.Users.AnyAsync(u => u.Username == user.Username))
+    //     {
+    //         return false;
+    //     }
 
-        user.PasswordHash = HashPassword(user.PasswordHash);
+    //     user.PasswordHash = HashPassword(user.PasswordHash);
+    //     await _context.Users.AddAsync(user);
+    //     await _context.SaveChangesAsync();
+    //     return true;
+    // }
+
+    public async Task<bool> IsUniqueUserAsync(string username)
+    {
+        return !await _context.Users.AnyAsync(u => u.Username == username);
+    }
+
+    public async Task<UserDTO?> RegisterUserAsync(RegisterationRequestDTO model)
+    {
+        var user = new User
+        {
+            Username = model.Username,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password)
+        };
+
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        return true;
+
+        return _mapper.Map<UserDTO>(user);
     }
 
     public async Task<string> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequest request)
