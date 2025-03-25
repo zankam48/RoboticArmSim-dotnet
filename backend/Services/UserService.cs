@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Identity.Data;
 using RoboticArmSim.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using RoboticArmSim.Data;
 using RoboticArmSim.DTOs;
+using AutoMapper;
 
 
 namespace RoboticArmSim.Services;
@@ -19,10 +15,12 @@ public class UserService
 {
     private readonly ApplicationDbContext _context;
     private readonly string _jwtSecretKey;
-    public UserService(ApplicationDbContext context, IConfiguration configuration)
+    private readonly IMapper _mapper;
+    public UserService(ApplicationDbContext context, IConfiguration configuration, IMapper mapper)
     {
         _context = context;
         _jwtSecretKey = configuration["Jwt:SecretKey"];
+        _mapper = mapper;
     }
 
     private bool VerifyPassword(string hash, string password)
@@ -35,20 +33,6 @@ public class UserService
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
 
-
-    // public async Task<bool> RegisterUserAsync(User user)
-    // {
-    //     if (await _context.Users.AnyAsync(u => u.Username == user.Username))
-    //     {
-    //         return false;
-    //     }
-
-    //     user.PasswordHash = HashPassword(user.PasswordHash);
-    //     await _context.Users.AddAsync(user);
-    //     await _context.SaveChangesAsync();
-    //     return true;
-    // }
-
     public async Task<bool> IsUniqueUserAsync(string username)
     {
         return !await _context.Users.AnyAsync(u => u.Username == username);
@@ -56,10 +40,13 @@ public class UserService
 
     public async Task<UserDTO?> RegisterUserAsync(RegisterationRequestDTO model)
     {
+        if (await _context.Users.AnyAsync(u => u.Username == model.Username));
         var user = new User
         {
             Username = model.Username,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+            IsControlling = false,
+            ConnectedAt = DateTime.UtcNow
         };
 
         await _context.Users.AddAsync(user);
@@ -68,7 +55,7 @@ public class UserService
         return _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<string> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequest request)
+    public async Task<string> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequestDTO request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
         if (user == null ||!VerifyPassword(user.PasswordHash, request.Password))
@@ -94,6 +81,7 @@ public class UserService
     public List<User> GetActiveUsers()
     {
         return _context.Users.Where(u => u.IsControlling).ToList();
+        // pake mapper
     }
 
 

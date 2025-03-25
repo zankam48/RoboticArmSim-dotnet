@@ -1,6 +1,5 @@
 namespace RoboticArmSim.Controllers;
 
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using RoboticArmSim.Models;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using System.Net;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : Controller
+public class UserController : ControllerBase
 {
     
     private readonly UserService _userService;
@@ -25,7 +24,7 @@ public class UserController : Controller
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO model)
     {
-        var response = await ApiResponse<UserDTO>();
+        var response = new ApiResponse<UserDTO>();
 
         if (!await _userService.IsUniqueUserAsync(model.Username))
         {
@@ -55,7 +54,7 @@ public class UserController : Controller
         var token = await _userService.AuthenticateAsync(request);
         if (string.IsNullOrEmpty(token))
         {
-            return Unauthorized("Invalid credentials.");
+            return Unauthorized(new {Message = "Invalid credentials."});
         }
         return Ok(new {Token = token});
     }

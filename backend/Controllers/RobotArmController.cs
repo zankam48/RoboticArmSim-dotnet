@@ -12,55 +12,49 @@ namespace RoboticArmSim.Controllers;
 [Route("api/[controller]")]
 public class RoboticArmController : ControllerBase
 {
-    // robot arm service
     private readonly RobotArmService _robotArmService;
-    // ihubcontext 
     private readonly IHubContext<RoboticArmHub> _robotArmHub;
     private readonly ILogger<RoboticArmController> _logger;
 
-    public RoboticArmController(ILogger<RoboticArmController> logger)
+    public RoboticArmController(ILogger<RoboticArmController> logger, RobotArmService robotArmService, IHubContext<RoboticArmHub> robotArmHub)
     {
         _logger = logger;
+        _robotArmService = robotArmService;
+        _robotArmHub = robotArmHub;
     }
 
-    [HttpGet("move")]
+    [HttpPost("move")]
     public async Task<IActionResult> MoveArm([FromBody] MovementCommand command)
     {
-        if (command.Angle < 0)
-            return BadRequest("Angle must be positive!");
-
         var result = await _robotArmService.MoveArmAsync(command);
         if (result == null)
             return BadRequest("Invalid movement command.");
-
-        await _robotArmHub.Clients.All.SendAsync("ReceiveArmUpdate", result);
 
         return Ok(result);
     }
 
 
-    [HttpGet("state")]
-    public IActionResult State()
+    [HttpGet("state/{armId}")]
+    public async Task<IActionResult> GetArmState(int armId)
     {
-        return Ok();
+        var state = await _robotArmService.GetArmStateAsync(armId);
+        if (state == null) return NotFound("Robot Arm not found.");
+        return Ok(state);
+
     }
-    [HttpGet("stats")]
-    public IActionResult GetArmStatus()
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllArms()
     {
+        var arms = await _robotArmService.GetAllArmsAsync();
+        if (arms == null) return NotFound("Robot Arm not found.");
         return Ok();
     }
 
-    [HttpPatch("update")]
-    public IActionResult Update()
+    [HttpDelete("reset/{armId}")]
+    public async Task<IActionResult> ResetArm(int armId)
     {
-        return Ok();
-    }
-
-
-    [HttpDelete("reset")]
-    public IActionResult Reset()
-    {
-        return Ok();
+        await _robotArmService.ResetArmAsync(armId);
+        return Ok($"Robot arm {armId} has been reset.");
     }
 }
 

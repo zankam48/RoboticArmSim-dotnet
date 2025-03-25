@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using RoboticArmSim.Models;
 using RoboticArmSim.DTOs;
 using RoboticArmSim.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace RoboticArmSim.Services;
 
@@ -27,32 +28,27 @@ public class RobotArmService
     {
         _logger.LogInformation($"Processing movement command: ArmId={command.ArmId}, Joint={command.Joint}, Angle={command.Angle}");
         
-        if (command.Angle < 0)
+        var robotArm = await _context.RobotArms.FindAsync(command.ArmId);
+        if (robotArm == null)
         {
-            _logger.LogWarning("Invalid movement: Angle must be positive.");
+            _logger.LogWarning($"RobotArm with ID {command.ArmId} not found.");
             return null;
         }
-
-        var robotArm = new RobotArm
+        if (command.Angle < 0 || command.Angle > 180)
         {
-            Id = command.ArmId,
-            PositionX = 0,
-            PositionY = 0,
-            PositionZ = 0,
-            Rotation = 0,
-            JointAngles = new List<float> { 0, 0, 0, 0 }
-        };
+            _logger.LogWarning("Invalid movement: Angle must be between 0 and 180.");
+            return null;
+        }
 
         int jointIndex = int.TryParse(command.Joint.Replace("Joint", ""), out int index) ? index - 1 : -1;
-        if (jointIndex >= 0 && jointIndex < robotArm.JointAngles.Count)
+        if (jointIndex <= 0 && jointIndex > robotArm.JointAngles.Count)
         {
-            robotArm.JointAngles[jointIndex] = command.Angle;
-        }
-        else
-        {
-            _logger.LogWarning("Invalid joint index.");
+            _logger.LogWarning($"Invalid joint index: {jointIndex}. Must be between 0 and {robotArm.JointAngles.Count -1}");
             return null;
         }
+
+        robotArm.JointAngles[jointIndex] = command.Angle;
+        await _context.SaveChangesAsync();
 
         var robotArmDto = new RobotArmDTO
         {
@@ -69,34 +65,30 @@ public class RobotArmService
         return robotArmDto;
     }
 
-    public RobotArm GetArmState()
+    public async Task<RobotArm?> GetArmStateAsync(int ArmId)
     {
-        return _robotArm;
+        return await _context.RobotArms.FindAsync(ArmId);
     }
 
-    public RobotArm GetArmStats()
+    public async Task<List<RobotArm>> GetAllArmsAsync()
     {
-        return _robotArm;
+        return await _context.RobotArms.ToListAsync();
     }
 
-    public void UpdateArm(RobotArm updatedArm)
+    public async Task ResetArmAsync(int ArmId)
     {
-        _robotArm.PositionX = updatedArm.PositionX;
-        _robotArm.PositionY = updatedArm.PositionY;
-        _robotArm.PositionZ = updatedArm.PositionZ;
-        _robotArm.Rotation = updatedArm.Rotation;
-        _robotArm.JointAngles = new List<float>(updatedArm.JointAngles);
-        _logger.LogInformation("Robot arm updated successfully.");
-    }
-
-    public void ResetArm()
-    {
-        _robotArm.PositionX = 0;
-        _robotArm.PositionY = 0;
-        _robotArm.PositionZ = 0;
-        _robotArm.Rotation = 0;
-        _robotArm.JointAngles = new List<float> { 0, 0, 0, 0 };
-        _logger.LogInformation("Robot arm reset to default state.");
+        var robotArm = await _context.RobotArms.FindAsync(ArmId);
+        if (robotArm != null)
+        {
+            robotArm.PositionX = 0;
+            robotArm.PositionY = 0;
+            robotArm.PositionZ = 0;
+            robotArm.Rotation = 0;
+            robotArm.JointAngles = new List<float> { 0, 0, 0, 0, 0, 0 };
+            // robotArm.JointAngles.Clear();
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Robot arm {ArmId} reset to default state.");
+        }
     }
 }
 
