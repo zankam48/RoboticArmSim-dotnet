@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using RoboticArmSim.Models;
 using RoboticArmSim.Services;
 using RoboticArmSim.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace RoboticArmSim.Controllers;
@@ -24,6 +25,7 @@ public class RoboticArmController : ControllerBase
         _robotArmHub = robotArmHub;
     }
 
+    // [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreateArm([FromBody] RobotArmDTO robotArmDTO)
     {
@@ -31,6 +33,7 @@ public class RoboticArmController : ControllerBase
         return Ok(createdArm);
     }
 
+    // [Authorize]
     [HttpPost("move")]
     public async Task<IActionResult> MoveArm([FromBody] MovementCommand command)
     {
@@ -55,7 +58,7 @@ public class RoboticArmController : ControllerBase
     {
         var arms = await _robotArmService.GetAllArmsAsync();
         if (arms == null) return NotFound("Robot Arm not found.");
-        return Ok();
+        return Ok(arms);
     }
 
     [HttpDelete("reset/{armId}")]
@@ -63,6 +66,17 @@ public class RoboticArmController : ControllerBase
     {
         await _robotArmService.ResetArmAsync(armId);
         return Ok($"Robot arm {armId} has been reset.");
+    }
+
+    [HttpDelete("delete/{armId}")]
+    public async Task<IActionResult> DeleteArm(int armId)
+    {
+        var success = await _robotArmService.DeleteArmAsync(armId);
+        if (!success)
+        {
+            return NotFound($"Robot arm with ID {armId} no found.");
+        }
+        return Ok($"Robot arm with ID {armId} deleted successfully");
     }
 }
 

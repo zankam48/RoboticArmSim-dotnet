@@ -131,5 +131,18 @@ namespace RoboticArmSim.Services
                 _logger.LogInformation($"Robot arm {armId} reset to default state.");
             }
         }
+
+        public async Task<bool> DeleteArmAsync(int armId)
+        {
+            var robotArm = await _context.RobotArms.FindAsync(armId);
+            if (robotArm == null)
+            {
+                return false;
+            }
+
+            _context.RobotArms.Remove(robotArm);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
