@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using RoboticArmSim.Validators;
+using RoboticArmSim.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RobotArmService>();
+builder.Services.AddScoped<IRobotArmRepository, RobotArmRepository>();
 builder.Services.AddScoped<MovementLogService>();
 
 builder.Services.AddSignalR();

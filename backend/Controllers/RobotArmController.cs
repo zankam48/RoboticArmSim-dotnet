@@ -53,9 +53,9 @@ public class RoboticArmController : ControllerBase
 
 
     [HttpGet("state/{armId}")]
-    public async Task<IActionResult> GetArmState(int armId)
+    public async Task<IActionResult> GetArmById(int armId)
     {
-        var state = await _robotArmService.GetArmStateAsync(armId);
+        var state = await _robotArmService.GetArmByIdAsync(armId);
         if (state == null) return NotFound("Robot Arm not found.");
         return Ok(state);
 
@@ -64,11 +64,11 @@ public class RoboticArmController : ControllerBase
     public async Task<IActionResult> GetAllArms()
     {
         var arms = await _robotArmService.GetAllArmsAsync();
-        if (arms == null) return NotFound("Robot Arm not found.");
+        if (arms == null || arms.Count == 0) return NotFound("Robot Arm not found.");
         return Ok(arms);
     }
 
-    [HttpDelete("reset/{armId}")]
+    [HttpPut("reset/{armId}")]
     public async Task<IActionResult> ResetArm(int armId)
     {
         await _robotArmService.ResetArmAsync(armId);
