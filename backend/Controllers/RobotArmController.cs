@@ -29,8 +29,20 @@ public class RoboticArmController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateArm([FromBody] CreateRobotArmDTO createDto)
     {
-        var createdArm = await _robotArmService.CreateRobotArmAsync(createDto);
-        return CreatedAtAction(nameof(GetArmState), new {armId = createdArm.Id}, createdArm);
+        try
+        {
+            var createdArm = await _robotArmService.CreateRobotArmAsync(createDto);
+            return CreatedAtAction(nameof(GetArmState), new { armId = createdArm.Id }, createdArm);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new {error = ex.Message});
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"An error occurred while creating arm: {ex.Message}");
+            return StatusCode(500, "An error occurred while creating arm.");
+        }
     }
 
     // [Authorize]

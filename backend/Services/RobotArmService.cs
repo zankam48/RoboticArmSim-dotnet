@@ -29,6 +29,19 @@ namespace RoboticArmSim.Services
 
         public async Task<RobotArmDTO> CreateRobotArmAsync(CreateRobotArmDTO createDto)
         {
+            
+            if (createDto.JointAngles == null || createDto.JointAngles.Count != 6)
+            {
+                _logger.LogWarning("Invalid number of joint angles. Expected 6.");
+                throw new ArgumentException("Invalid number of joint angles. Expected 6.");
+            }
+
+            if (createDto.JointAngles.Any(skibidi => skibidi < 0 || skibidi > 180))
+            {
+                _logger.LogWarning("Invalid joint angle values. Each value must be between 0 and 180 degrees.");
+                throw new ArgumentException("Invalid joint angle values. Each value must be between 0 and 180 degrees.");
+            }
+    
             var robotArm = new RobotArm
             {
                 PositionX = createDto.PositionX,
@@ -63,7 +76,7 @@ namespace RoboticArmSim.Services
 
             List<float> jointAngles = robotArm.GetJointAngles();
 
-            int jointIndex = int.TryParse(command.Joint.Replace("Joint", ""), out int index) ? index - 1 : -1;
+            int jointIndex = command.Joint;
             if (jointIndex < 0 || jointIndex >= jointAngles.Count)
             {
                 _logger.LogWarning($"Invalid joint index: {jointIndex}. Must be between 0 and {jointAngles.Count - 1}");
@@ -75,14 +88,7 @@ namespace RoboticArmSim.Services
 
             await _context.SaveChangesAsync();
 
-            var robotArmDto = new RobotArmDTO
-            {
-                PositionX = robotArm.PositionX,
-                PositionY = robotArm.PositionY,
-                PositionZ = robotArm.PositionZ,
-                Rotation = robotArm.Rotation,
-                JointAngles = jointAngles
-            };
+            var robotArmDto = _mapper.Map<RobotArmDTO>(robotArm);
 
             await _hubContext.Clients.All.SendAsync("ReceiveArmUpdate", robotArmDto);
 
