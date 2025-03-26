@@ -3,6 +3,9 @@ using RoboticArmSim.Data;
 using AutoMapper;
 using RoboticArmSim;
 using RoboticArmSim.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using RoboticArmSim.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+
+// fluent api
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddTransient<IValidator<Registration>, RegistrationValidator>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
