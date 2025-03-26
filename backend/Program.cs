@@ -9,6 +9,7 @@ using RoboticArmSim.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using RoboticArmSim.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 
 // fluent api
-// builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateRobotArmValidator>();
 // builder.Services.AddFluentValidationClientsideAdapters();
 // builder.Services.AddTransient<IValidator<Registration>, RegistrationValidator>();
 

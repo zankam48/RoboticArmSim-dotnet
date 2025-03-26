@@ -7,8 +7,11 @@ using Microsoft.Extensions.Logging;
 using RoboticArmSim.Models;
 using RoboticArmSim.DTOs;
 using RoboticArmSim.Data;
+using RoboticArmSim.Validators;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using FluentValidation;
+using System.Net;
 
 namespace RoboticArmSim.Services
 {
@@ -18,30 +21,30 @@ namespace RoboticArmSim.Services
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<RoboticArmHub> _hubContext;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateRobotArmDTO> _validator;
 
-        public RobotArmService(ILogger<RobotArmService> logger, IHubContext<RoboticArmHub> hubContext, ApplicationDbContext context, IMapper mapper)
+        public RobotArmService(ILogger<RobotArmService> logger, IHubContext<RoboticArmHub> hubContext, ApplicationDbContext context, IMapper mapper, IValidator<CreateRobotArmDTO> validator)
         {
             _logger = logger;
             _context = context;
             _hubContext = hubContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
-        public async Task<RobotArmDTO> CreateRobotArmAsync(CreateRobotArmDTO createDto)
+        public async Task<ApiResponse<RobotArmDTO>> CreateRobotArmAsync(CreateRobotArmDTO createDto)
         {
-            
-            if (createDto.JointAngles == null || createDto.JointAngles.Count != 6)
+            var validationResult = await _validator.ValidateAsync(createDto);
+            if (!validationResult.IsValid)
             {
-                _logger.LogWarning("Invalid number of joint angles. Expected 6.");
-                throw new ArgumentException("Invalid number of joint angles. Expected 6.");
+                return new ApiResponse<RobotArmDTO>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    ErrorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList()
+                };
             }
 
-            if (createDto.JointAngles.Any(skibidi => skibidi < 0 || skibidi > 180))
-            {
-                _logger.LogWarning("Invalid joint angle values. Each value must be between 0 and 180 degrees.");
-                throw new ArgumentException("Invalid joint angle values. Each value must be between 0 and 180 degrees.");
-            }
-    
             var robotArm = new RobotArm
             {
                 PositionX = createDto.PositionX,
@@ -54,7 +57,12 @@ namespace RoboticArmSim.Services
 
             _context.RobotArms.Add(robotArm);
             await _context.SaveChangesAsync();
-            return _mapper.Map<RobotArmDTO>(robotArm);
+            return new ApiResponse<RobotArmDTO>
+            {
+                StatusCode = HttpStatusCode.OK,
+                IsSuccess = true,
+                Data = _mapper.Map<RobotArmDTO>(robotArm)
+            };
         }
 
         public async Task<RobotArmDTO?> MoveArmAsync(MovementCommand command)
