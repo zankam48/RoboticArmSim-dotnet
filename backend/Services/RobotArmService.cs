@@ -27,17 +27,17 @@ namespace RoboticArmSim.Services
             _mapper = mapper;
         }
 
-        public async Task<RobotArmDTO> CreateRobotArmAsync(RobotArmDTO robotArmDTO)
+        public async Task<RobotArmDTO> CreateRobotArmAsync(CreateRobotArmDTO createDto)
         {
             var robotArm = new RobotArm
             {
-                PositionX = robotArmDTO.PositionX,
-                PositionY = robotArmDTO.PositionY,
-                PositionZ = robotArmDTO.PositionZ,
-                Rotation = robotArmDTO.Rotation
+                PositionX = createDto.PositionX,
+                PositionY = createDto.PositionY,
+                PositionZ = createDto.PositionZ,
+                Rotation = createDto.Rotation
             };
 
-            robotArm.SetJointAngles(robotArmDTO.JointAngles ?? new List<float> { 0, 0, 0, 0, 0, 0 });
+            robotArm.SetJointAngles(createDto.JointAngles ?? new List<float> { 0, 0, 0, 0, 0, 0 });
 
             _context.RobotArms.Add(robotArm);
             await _context.SaveChangesAsync();

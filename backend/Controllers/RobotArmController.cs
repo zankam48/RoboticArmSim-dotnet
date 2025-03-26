@@ -27,10 +27,10 @@ public class RoboticArmController : ControllerBase
 
     // [Authorize]
     [HttpPost("create")]
-    public async Task<IActionResult> CreateArm([FromBody] RobotArmDTO robotArmDTO)
+    public async Task<IActionResult> CreateArm([FromBody] CreateRobotArmDTO createDto)
     {
-        var createdArm = await _robotArmService.CreateRobotArmAsync(robotArmDTO);
-        return Ok(createdArm);
+        var createdArm = await _robotArmService.CreateRobotArmAsync(createDto);
+        return CreatedAtAction(nameof(GetArmState), new {armId = createdArm.Id}, createdArm);
     }
 
     // [Authorize]
