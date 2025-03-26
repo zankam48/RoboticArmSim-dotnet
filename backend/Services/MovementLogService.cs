@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RoboticArmSim.Data;
+using RoboticArmSim.DTOs;
 using RoboticArmSim.Models;
 
 namespace RoboticArmSim.Services;
@@ -8,36 +10,50 @@ public class MovementLogService
 {
     private readonly ILogger<MovementLogService> _logger;
     private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public MovementLogService(ILogger<MovementLogService> logger, ApplicationDbContext context)
+    public MovementLogService(ILogger<MovementLogService> logger, ApplicationDbContext context, IMapper mapper)
     {
         _logger = logger;
         _context = context;
+        _mapper = mapper;
     }
     
     public async Task AddLogAsync(MovementLog log)
     {
-        _context.MovementLogs.AddAsync(log);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.MovementLogs.AddAsync(log);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            
+            _logger.LogError($"Failed to add movement log: {ex.Message}");
+        }
     }
 
-    public async Task<List<MovementLog>> GetLogsByUserAsync(int userId)
+    public async Task<List<MovementLogDTO>> GetLogsByUserAsync(int userId)
     {
-        return await _context.MovementLogs
+        var logs = await _context.MovementLogs
            .Where(l => l.UserId == userId)
            .OrderByDescending(l => l.TimeStamp)
            .ToListAsync();
+
+        return _mapper.Map<List<MovementLogDTO>>(logs); 
     }
 
-    public async Task<List<MovementLog>> GetRecentLogsAsync(int count = 10)
+    public async Task<List<MovementLogDTO>> GetRecentLogsAsync(int count = 10)
         {
-            return await _context.MovementLogs
+            var logs = await _context.MovementLogs
                 .OrderByDescending(log => log.TimeStamp)
                 .Take(count)
                 .ToListAsync();
+            
+            return _mapper.Map<List<MovementLogDTO>>(logs);
         }
 
-    public async Task<PagedResult<MovementLog>> GetLogsPagedAsync(int page, int pageSize)
+    public async Task<PagedResult<MovementLogDTO>> GetLogsPagedAsync(int page, int pageSize)
     {
         var query = _context.MovementLogs.OrderByDescending(log => log.TimeStamp);
         var totalCount = await query.CountAsync();
@@ -47,13 +63,13 @@ public class MovementLogService
             .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<MovementLog>
+        return new PagedResult<MovementLogDTO>
         {
             Page = page,
             PageSize = pageSize,
             TotalCount = totalCount,
-            Items = logs
-        };
+            Items = _mapper.Map<List<MovementLogDTO>>(logs)
+        }; 
     }
 }
 

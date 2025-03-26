@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using RoboticArmSim.Models;
 using RoboticArmSim.Services;
+using RoboticArmSim.DTOs;
 
 
 namespace RoboticArmSim.Controllers;
@@ -21,6 +22,13 @@ public class RoboticArmController : ControllerBase
         _logger = logger;
         _robotArmService = robotArmService;
         _robotArmHub = robotArmHub;
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateArm([FromBody] RobotArmDTO robotArmDTO)
+    {
+        var createdArm = await _robotArmService.CreateRobotArmAsync(robotArmDTO);
+        return Ok(createdArm);
     }
 
     [HttpPost("move")]

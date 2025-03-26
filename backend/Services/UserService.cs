@@ -78,10 +78,10 @@ public class UserService
         return true;
     }
 
-    public List<User> GetActiveUsers()
+    public List<UserDTO> GetActiveUsers()
     {
-        return _context.Users.Where(u => u.IsControlling).ToList();
-        // pake mapper
+        var activeUsers = _context.Users.Where(u => u.IsControlling).ToList();
+        return _mapper.Map<List<UserDTO>>(activeUsers);
     }
 
 
@@ -109,3 +109,5 @@ public class UserService
     }
     
 }
+
+
