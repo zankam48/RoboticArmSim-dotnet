@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using RoboticArmSim.Services;
 using RoboticArmSim.DTOs;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
+// [Authorize] kl unauthorized pake 401
 public class UserController : ControllerBase
 {
     

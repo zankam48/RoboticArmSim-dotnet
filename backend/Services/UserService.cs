@@ -47,7 +47,7 @@ public class UserService
         return _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<LoginResponseDTO> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequestDTO request)
+    public async Task<LoginResponseDTO> AuthenticateAsync(LoginRequestDTO request)
     {
         var user = await _userRepository.GetByUsernameAsync(request.Username!);
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))

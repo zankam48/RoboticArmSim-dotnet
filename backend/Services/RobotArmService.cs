@@ -19,7 +19,6 @@ namespace RoboticArmSim.Services
     public class RobotArmService
     {
         private readonly ILogger<RobotArmService> _logger;
-        // private readonly ApplicationDbContext _context;
         private readonly IRobotArmRepository _robotArmRepository;
         private readonly IHubContext<RoboticArmHub> _hubContext;
         private readonly IMapper _mapper;
@@ -31,7 +30,6 @@ namespace RoboticArmSim.Services
                                 IRobotArmRepository robotArmRepository, IValidator<MovementCommand> moveValidator)
         {
             _logger = logger;
-            // _context = context;
             _robotArmRepository = robotArmRepository;
             _hubContext = hubContext;
             _mapper = mapper;
@@ -62,8 +60,6 @@ namespace RoboticArmSim.Services
 
             robotArm.SetJointAngles(createDto.JointAngles ?? new List<float> { 0, 0, 0, 0, 0, 0 });
 
-            // _context.RobotArms.Add(robotArm);
-            // await _context.SaveChangesAsync();
             await _robotArmRepository.AddRobotArmAsync(robotArm);
             return new ApiResponse<RobotArmDTO>
             {
@@ -103,7 +99,6 @@ namespace RoboticArmSim.Services
             jointAngles[jointIndex] = command.Angle;
             robotArm.SetJointAngles(jointAngles);  
 
-            // await _context.SaveChangesAsync();
             await _robotArmRepository.UpdateRobotArmAsync(robotArm);
 
             var robotArmDto = _mapper.Map<RobotArmDTO>(robotArm);
@@ -115,7 +110,6 @@ namespace RoboticArmSim.Services
 
         public async Task<RobotArmDTO?> GetArmByIdAsync(int armId)
         {
-            // var robotArm = await _context.RobotArms.FindAsync(armId);
             var robotArm = await _robotArmRepository.GetArmByIdAsync(armId);
             if (robotArm == null) return null;
 
@@ -125,14 +119,12 @@ namespace RoboticArmSim.Services
 
         public async Task<List<RobotArmDTO>> GetAllArmsAsync()
         {
-            // var arms = await _context.RobotArms.ToListAsync();
             var arms = await _robotArmRepository.GetAllArmsAsync();
             return _mapper.Map<List<RobotArmDTO>>(arms);
         }
 
         public async Task ResetArmAsync(int armId)
         {
-            // var robotArm = await _context.RobotArms.FindAsync(armId);
             var robotArm = await _robotArmRepository.GetArmByIdAsync(armId);
             if (robotArm != null)
             {
@@ -143,7 +135,6 @@ namespace RoboticArmSim.Services
                 
                 robotArm.SetJointAngles(new List<float> { 0, 0, 0, 0, 0, 0 });
 
-                // await _context.SaveChangesAsync();
                 await _robotArmRepository.UpdateRobotArmAsync(robotArm);
                 _logger.LogInformation($"Robot arm {armId} reset to default state.");
             }
@@ -151,14 +142,12 @@ namespace RoboticArmSim.Services
 
         public async Task<bool> DeleteArmAsync(int armId)
         {
-            // var robotArm = await _context.RobotArms.FindAsync(armId);
             var robotArm = await _robotArmRepository.GetArmByIdAsync(armId);
             if (robotArm == null)
             {
                 return false;
             }
 
-            //_context.RobotArms.Remove(robotArm); await _context.SaveChangesAsync();
             await _robotArmRepository.DeleteArmAsync(armId);
 
             return true;

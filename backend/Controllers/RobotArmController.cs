@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace RoboticArmSim.Controllers;
 
+// [Authorize]
 [ApiController] 
 [Route("api/[controller]")]
 public class RoboticArmController : ControllerBase
@@ -25,7 +26,7 @@ public class RoboticArmController : ControllerBase
         _robotArmHub = robotArmHub;
     }
 
-    // [Authorize]
+    [Authorize]
     [HttpPost("create")]
     public async Task<IActionResult> CreateArm([FromBody] CreateRobotArmDTO createDto)
     {
@@ -37,10 +38,11 @@ public class RoboticArmController : ControllerBase
             return BadRequest(response);
         }
 
-        return Ok(response);
+        return CreatedAtAction(nameof(GetArmById), new { armId = response.Data.Id }, response);
+
     }
 
-    // [Authorize]
+    [Authorize]
     [HttpPost("move")]
     public async Task<IActionResult> MoveArm([FromBody] MovementCommand command)
     {
