@@ -4,10 +4,10 @@ namespace RoboticArmSim.Models;
 public class MovementLog
 {
     [Key]
-    public int Id {get; set;}
+    public Guid Id {get; set;}
 
     [Required]
-    public int RobotArmId {get; set;}
+    public Guid RobotArmId {get; set;}
 
     [Required]
     public string Joint {get; set;}
@@ -18,7 +18,7 @@ public class MovementLog
     public string CommandType {get; set;}
     [Required]
     public DateTime TimeStamp {get; set;} = DateTime.Now;
-    public int? UserId {get; set;}
+    public Guid? UserId {get; set;}
     
     [ForeignKey("UserId")]
     public User? User {get; set;}

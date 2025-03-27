@@ -4,9 +4,9 @@ using RoboticArmSim.Models;
 
 public interface IRobotArmRepository
 {
-    Task<RobotArm?> GetArmByIdAsync(int armId);
+    Task<RobotArm?> GetArmByIdAsync(Guid armId);
     Task<List<RobotArm>> GetAllArmsAsync();
     Task AddRobotArmAsync(RobotArm robotArm);
     Task UpdateRobotArmAsync(RobotArm robotArm);
-    Task DeleteArmAsync(int armId);
+    Task DeleteArmAsync(Guid armId);
 }

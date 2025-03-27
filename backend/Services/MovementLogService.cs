@@ -33,7 +33,7 @@ public class MovementLogService
         }
     }
 
-    public async Task<List<MovementLogDTO>> GetLogsByUserAsync(int userId)
+    public async Task<List<MovementLogDTO>> GetLogsByUserAsync(Guid userId)
     {
         var logs = await _context.MovementLogs
            .Where(l => l.UserId == userId)

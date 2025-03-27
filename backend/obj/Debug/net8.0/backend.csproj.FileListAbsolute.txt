@@ -358,3 +358,4 @@ D:\Coding Project\Zankam\RoboticArmSimulation\backend\obj\Debug\net8.0\backend.p
 D:\Coding Project\Zankam\RoboticArmSimulation\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 D:\Coding Project\Zankam\RoboticArmSimulation\backend\obj\Debug\net8.0\ref\backend.dll
 C:\Users\Batch 12\Documents\Zankam\RoboticArmSim-dotnet\backend\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll
+D:\Coding Project\Zankam\RoboticArmSimulation\backend\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll

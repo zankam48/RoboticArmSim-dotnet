@@ -16,7 +16,7 @@ public class RobotArmRepository : IRobotArmRepository
         _context = context;
     }
 
-    public async Task<RobotArm?> GetArmByIdAsync(int armId)
+    public async Task<RobotArm?> GetArmByIdAsync(Guid armId)
     {
         return await _context.RobotArms.FindAsync(armId);
     }
@@ -38,7 +38,7 @@ public class RobotArmRepository : IRobotArmRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteArmAsync(int armId)
+    public async Task DeleteArmAsync(Guid armId)
     {
         var robotArm = await _context.RobotArms.FindAsync(armId);
         if (robotArm != null)

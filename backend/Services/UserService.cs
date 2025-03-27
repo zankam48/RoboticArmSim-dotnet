@@ -60,7 +60,7 @@ public class UserService
         };
     }
 
-    public async Task<bool> AssignControlAsync(int userId)
+    public async Task<bool> AssignControlAsync(Guid userId)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null) return false;

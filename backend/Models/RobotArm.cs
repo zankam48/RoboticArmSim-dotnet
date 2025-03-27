@@ -8,7 +8,8 @@ public class RobotArm
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    // public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
     public float PositionX { get; set; }

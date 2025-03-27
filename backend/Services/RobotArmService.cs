@@ -108,7 +108,7 @@ namespace RoboticArmSim.Services
             return robotArmDto;
         }
 
-        public async Task<RobotArmDTO?> GetArmByIdAsync(int armId)
+        public async Task<RobotArmDTO?> GetArmByIdAsync(Guid armId)
         {
             var robotArm = await _robotArmRepository.GetArmByIdAsync(armId);
             if (robotArm == null) return null;
@@ -123,7 +123,7 @@ namespace RoboticArmSim.Services
             return _mapper.Map<List<RobotArmDTO>>(arms);
         }
 
-        public async Task ResetArmAsync(int armId)
+        public async Task ResetArmAsync(Guid armId)
         {
             var robotArm = await _robotArmRepository.GetArmByIdAsync(armId);
             if (robotArm != null)
@@ -140,7 +140,7 @@ namespace RoboticArmSim.Services
             }
         }
 
-        public async Task<bool> DeleteArmAsync(int armId)
+        public async Task<bool> DeleteArmAsync(Guid armId)
         {
             var robotArm = await _robotArmRepository.GetArmByIdAsync(armId);
             if (robotArm == null)
