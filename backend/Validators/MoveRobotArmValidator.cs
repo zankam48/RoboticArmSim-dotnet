@@ -14,7 +14,7 @@ public class MoveRobotArmValidator : AbstractValidator<MovementCommand>
             .InclusiveBetween(0, 5).WithMessage("Joint index must be between 0 and 5.");
 
         RuleFor(x => x.Angle)
-            .GreaterThanOrEqualTo(0).WithMessage("Angle must be 0 or more.")
-            .LessThanOrEqualTo(180).WithMessage("Angle must be 180 or less.");
+            .GreaterThanOrEqualTo(0).WithMessage("Angle must be be between 0 and 180 degrees.")
+            .LessThanOrEqualTo(180).WithMessage("Angle must be be between 0 and 180 degrees.");
     }
 }

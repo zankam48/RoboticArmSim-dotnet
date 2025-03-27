@@ -7,80 +7,76 @@ using Microsoft.EntityFrameworkCore;
 using RoboticArmSim.Data;
 using RoboticArmSim.DTOs;
 using AutoMapper;
-
+using RoboticArmSim.Repositories;
 
 namespace RoboticArmSim.Services;
 
 public class UserService 
 {
-    private readonly ApplicationDbContext _context;
+    // private readonly ApplicationDbContext _context;
+    private readonly IUserRepository _userRepository;
+
     private readonly string _jwtSecretKey;
     private readonly IMapper _mapper;
-    public UserService(ApplicationDbContext context, IConfiguration configuration, IMapper mapper)
+    public UserService(IUserRepository userRepository, IConfiguration configuration, IMapper mapper)
     {
-        _context = context;
+        _userRepository = userRepository;
         _jwtSecretKey = configuration["Jwt:SecretKey"];
         _mapper = mapper;
     }
-
-    private bool VerifyPassword(string hash, string password)
-    {
-        return BCrypt.Net.BCrypt.Verify(password, hash);
-    }
-
-    private string HashPassword(string password)
-    {
-        return BCrypt.Net.BCrypt.HashPassword(password);
-    }
-
+  
     public async Task<bool> IsUniqueUserAsync(string username)
     {
-        return !await _context.Users.AnyAsync(u => u.Username == username);
+        return await _userRepository.IsUniqueUsernameAsync(username);
     }
 
     public async Task<UserDTO?> RegisterUserAsync(RegisterationRequestDTO model)
     {
-        if (await _context.Users.AnyAsync(u => u.Username == model.Username));
+        // if (await _context.Users.AnyAsync(u => u.Username == model.Username));
         var user = new User
         {
             Username = model.Username,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-            IsControlling = false,
+            Role = model.Role,
             ConnectedAt = DateTime.UtcNow
         };
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.AddUserAsync(user);
+        await _userRepository.SaveChangesAsync();
 
         return _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<string> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequestDTO request)
+    public async Task<LoginResponseDTO> AuthenticateAsync(RoboticArmSim.DTOs.LoginRequestDTO request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-        if (user == null ||!VerifyPassword(user.PasswordHash, request.Password))
-        {
+        var user = await _userRepository.GetByUsernameAsync(request.Username!);
+        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             return null;
-        }
-        return GenerateJwtToken(user);
+
+        return new LoginResponseDTO
+        {
+            User = _mapper.Map<UserDTO>(user),
+            Token = GenerateJwtToken(user)
+        };
     }
 
     public async Task<bool> AssignControlAsync(int userId)
     {
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null) return false;
 
-        var users = await _context.Users.ToListAsync();
+        var users = await _userRepository.GetAllAsync();
         users.ForEach(u => u.IsControlling = false);
 
         user.IsControlling = true;
-        await _context.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
         return true;
     }
 
     public List<UserDTO> GetActiveUsers()
     {
-        var activeUsers = _context.Users.Where(u => u.IsControlling).ToList();
+        var activeUsers = _userRepository.GetAllAsync()
+            .Result.Where(u => u.IsControlling).ToList();
         return _mapper.Map<List<UserDTO>>(activeUsers);
     }
 

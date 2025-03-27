@@ -51,13 +51,14 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
-        var token = await _userService.AuthenticateAsync(request);
-        if (string.IsNullOrEmpty(token))
+        var result = await _userService.AuthenticateAsync(request);
+        if (result == null)
         {
             return Unauthorized(new {Message = "Invalid credentials."});
         }
-        return Ok(new {Token = token});
+        return Ok(result);
     }
+    
 
     [HttpPost("assign-control")]
     public async Task<IActionResult> AssignControl([FromBody] User user)

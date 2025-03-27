@@ -24,9 +24,11 @@ namespace RoboticArmSim.Services
         private readonly IHubContext<RoboticArmHub> _hubContext;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateRobotArmDTO> _validator;
+        private readonly IValidator<MovementCommand> _moveValidator;
 
         public RobotArmService(ILogger<RobotArmService> logger, IHubContext<RoboticArmHub> hubContext, 
-                                ApplicationDbContext context, IMapper mapper, IValidator<CreateRobotArmDTO> validator, IRobotArmRepository robotArmRepository)
+                                ApplicationDbContext context, IMapper mapper, IValidator<CreateRobotArmDTO> validator, 
+                                IRobotArmRepository robotArmRepository, IValidator<MovementCommand> moveValidator)
         {
             _logger = logger;
             // _context = context;
@@ -34,6 +36,7 @@ namespace RoboticArmSim.Services
             _hubContext = hubContext;
             _mapper = mapper;
             _validator = validator;
+            _moveValidator = moveValidator;
         }
 
         public async Task<ApiResponse<RobotArmDTO>> CreateRobotArmAsync(CreateRobotArmDTO createDto)
@@ -72,9 +75,15 @@ namespace RoboticArmSim.Services
 
         public async Task<RobotArmDTO?> MoveArmAsync(MovementCommand command)
         {
-            _logger.LogInformation($"Processing movement command: ArmId={command.ArmId}, Joint={command.Joint}, Angle={command.Angle}");
-            
-            // var robotArm = await _context.RobotArms.FindAsync(command.ArmId);
+
+            var validationResult = await _moveValidator.ValidateAsync(command);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogWarning("MoveArm validation failed: {Errors}", 
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+                return null;
+            }
+
             var robotArm = await _robotArmRepository.GetArmByIdAsync(command.ArmId);
             if (robotArm == null)
             {
@@ -82,14 +91,8 @@ namespace RoboticArmSim.Services
                 return null;
             }
 
-            if (command.Angle < 0 || command.Angle > 180)
-            {
-                _logger.LogWarning("Invalid movement: Angle must be between 0 and 180.");
-                return null;
-            }
 
             List<float> jointAngles = robotArm.GetJointAngles();
-
             int jointIndex = command.Joint;
             if (jointIndex < 0 || jointIndex >= jointAngles.Count)
             {

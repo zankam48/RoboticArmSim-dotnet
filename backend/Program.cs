@@ -32,6 +32,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RobotArmService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRobotArmRepository, RobotArmRepository>();
 builder.Services.AddScoped<MovementLogService>();
 
