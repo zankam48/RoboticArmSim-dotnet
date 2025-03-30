@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { register } from '../services/authService';
+import './Register.css'; 
 
 const Register = () => {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -16,11 +17,26 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input placeholder="Name" onChange={(e) => setForm({ ...form, username: e.target.value })} />
-      <input placeholder="Password" type="password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-      <button type="submit">Register</button>
-    </form>
+    <div className="register-container">
+      <form className="register-form" onSubmit={handleSubmit}>
+        <h2>Register</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={form.username}
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+    </div>
   );
 };
 

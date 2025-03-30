@@ -1,0 +1,85 @@
+/* Dashboard.css */
+
+.dashboard-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f2f7;
+  padding: 1rem;
+}
+
+.dashboard-content { /* New style for wrapper div */
+  display: flex;
+  width: 100%;
+  max-width: 1200px; /* Adjust as needed */
+  gap: 2rem; /* Spacing between card and sliders */
+}
+
+.dashboard-card {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  flex: 1; /* Take up available space */
+}
+
+.dashboard-card h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.dashboard-card p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.dashboard-actions button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #6c63ff;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-actions button:hover {
+  background-color: #5848e5;
+}
+
+.logout-btn {
+  background-color: #f44336;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+.sliders-section {
+  flex: 1; /* Take up available space */
+  text-align: left;
+}
+
+.slider {
+  margin-bottom: 1rem;
+}
+
+.slider label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.slider input[type="range"] {
+  width: 100%;
+}
