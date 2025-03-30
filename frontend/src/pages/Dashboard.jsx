@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
@@ -10,6 +10,17 @@ const Dashboard = () => {
     joint1: 0, joint2: 0, joint3: 0,
     joint4: 0, joint5: 0, joint6: 0
   });
+
+  useEffect(() => {
+    const savedAngles = localStorage.getItem('robotAngles');
+    if (savedAngles){
+      setJointAngles(JSON.parse(savedAngles));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('robotAngles', JSON.stringify(jointAngles));
+  }, [jointAngles]);
 
   const handleLogout = () => {
     logout();
@@ -24,13 +35,13 @@ const Dashboard = () => {
     const updated = { ...jointAngles, [joint]: parseFloat(value) };
     setJointAngles(updated);
 
-    // Later: send to SignalR instead
+    // bisa juga ke signalr
     window.dispatchEvent(new CustomEvent("jointUpdate", { detail: updated }));
   };
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-content"> {/* New wrapper div */}
+      <div className="dashboard-content"> 
         <div className="dashboard-card">
           <h1>Welcome to the Robot Arm Dashboard</h1>
           <p>Control your robotic arm and see live movement data.</p>

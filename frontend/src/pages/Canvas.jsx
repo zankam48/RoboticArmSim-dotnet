@@ -1,10 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'; 
 
 const Canvas = () => {
   const containerRef = useRef(null); 
   const hasInitialized = useRef(false);
+  // const robotArm = useRef
+  const [, setCurrentAngles] = useState({
+    joint1: 0, joint2: 0, joint3: 0,
+    joint4: 0, joint5: 0, joint6: 0
+  });
 
   useEffect(() => {
     console.log("Canvas mounted and init called");
@@ -63,11 +68,8 @@ const Canvas = () => {
 
       window.addEventListener('resize', onWindowResize);
 
-      // UI controls (you'll need to adapt these)
-      // setupControls();
-
-      // Start the render loop
       animate();
+      loadAndApplyAngles();
     }
 
     function onWindowResize() {
@@ -193,19 +195,37 @@ const Canvas = () => {
       gripperGroup.add(jawRight);
     }
 
-    // function setJointAngles(angles) {
-    //   if (angles.joint1 !== undefined) robotArm.joint1Pivot.rotation.y = angles.joint1 * Math.PI / 180;
-    //   if (angles.joint2 !== undefined) robotArm.joint2Pivot.rotation.x = angles.joint2 * Math.PI / 180;
-    //   if (angles.joint3 !== undefined) robotArm.joint3Pivot.rotation.x = angles.joint3 * Math.PI / 180;
-    //   if (angles.joint4 !== undefined) robotArm.joint4Pivot.rotation.y = angles.joint4 * Math.PI / 180;
-    //   if (angles.joint5 !== undefined) robotArm.joint5Pivot.rotation.x = angles.joint5 * Math.PI / 180;
-    //   if (angles.joint6 !== undefined) robotArm.joint6Pivot.rotation.y = angles.joint6 * Math.PI / 180;
-    // }
+    function loadAndApplyAngles() {
+      const saved = localStorage.getItem('robotAngles');
+      if (!saved) return;
+      const parsed = JSON.parse(saved);
+      setCurrentAngles(parsed);
+      setJointAngles(parsed);
+    }
+    
+
+    function setJointAngles(angles) {
+      if (angles.joint1 !== undefined) robotArm.joint1Pivot.rotation.y = angles.joint1 * Math.PI / 180;
+      if (angles.joint2 !== undefined) robotArm.joint2Pivot.rotation.x = angles.joint2 * Math.PI / 180;
+      if (angles.joint3 !== undefined) robotArm.joint3Pivot.rotation.x = angles.joint3 * Math.PI / 180;
+      if (angles.joint4 !== undefined) robotArm.joint4Pivot.rotation.y = angles.joint4 * Math.PI / 180;
+      if (angles.joint5 !== undefined) robotArm.joint5Pivot.rotation.x = angles.joint5 * Math.PI / 180;
+      if (angles.joint6 !== undefined) robotArm.joint6Pivot.rotation.y = angles.joint6 * Math.PI / 180;
+    }
+
+    function handleJointUpdate(event) {
+      const angles = event.detail;
+      setCurrentAngles(angles);
+      setJointAngles(angles);
+    }
+
+    window.addEventListener('jointUpdate', handleJointUpdate);
 
     init();
 
     return () => {
       window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('jointUpdate', handleJointUpdate);
       if (containerRef.current && renderer?.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
