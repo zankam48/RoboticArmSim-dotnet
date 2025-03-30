@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { register } from '../services/authService';
 
 const Register = () => {
-  const [form, setForm] = useState({ name: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ const Register = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input placeholder="Name" onChange={(e) => setForm({ ...form, name: e.target.value })} />
+      <input placeholder="Name" onChange={(e) => setForm({ ...form, username: e.target.value })} />
       <input placeholder="Password" type="password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
       <button type="submit">Register</button>
     </form>
